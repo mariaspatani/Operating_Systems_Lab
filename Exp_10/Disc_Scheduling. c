@@ -1,0 +1,144 @@
+#include<stdio.h>
+
+// 🔹 Sort function
+void sort(int arr[], int n){
+    for(int i=0;i<n-1;i++){
+        for(int j=0;j<n-i-1;j++){
+            if(arr[j] > arr[j+1]){
+                int t = arr[j];
+                arr[j] = arr[j+1];
+                arr[j+1] = t;
+            }
+        }
+    }
+}
+
+// 🔹 SSTF
+void SSTF(int req[], int n, int head){
+    int visited[50]={0}, seek=0;
+
+    for(int i=0;i<n;i++){
+        int min=9999, index=-1;
+
+        for(int j=0;j<n;j++){
+            if(!visited[j]){
+                int diff = head - req[j];
+                if(diff < 0) diff = -diff;   // manual abs
+
+                if(diff < min){
+                    min = diff;
+                    index = j;
+                }
+            }
+        }
+        seek += min;
+        head = req[index];
+        visited[index]=1;
+    }
+    printf("SSTF Seek Time = %d\n", seek);
+}
+
+// 🔹 LOOK
+void LOOK(int req[], int n, int head){
+    int seek=0, pos=0;
+    sort(req,n);
+
+    for(int i=0;i<n;i++){
+        if(req[i] >= head){
+            pos = i;
+            break;
+        }
+    }
+
+    for(int i=pos;i<n;i++){
+        int diff = head - req[i];
+        if(diff < 0) diff = -diff;
+
+        seek += diff;
+        head = req[i];
+    }
+
+    for(int i=pos-1;i>=0;i--){
+        int diff = head - req[i];
+        if(diff < 0) diff = -diff;
+
+        seek += diff;
+        head = req[i];
+    }
+
+    printf("LOOK Seek Time = %d\n", seek);
+}
+
+// 🔹 C-SCAN
+void CSCAN(int req[], int n, int head, int size){
+    int seek=0, pos=0;
+    sort(req,n);
+
+    for(int i=0;i<n;i++){
+        if(req[i] >= head){
+            pos = i;
+            break;
+        }
+    }
+
+    for(int i=pos;i<n;i++){
+        int diff = head - req[i];
+        if(diff < 0) diff = -diff;
+
+        seek += diff;
+        head = req[i];
+    }
+
+    int diff = head - (size - 1);
+    if(diff < 0) diff = -diff;
+    seek += diff;
+
+    head = 0;
+
+    for(int i=0;i<pos;i++){
+        int diff2 = head - req[i];
+        if(diff2 < 0) diff2 = -diff2;
+
+        seek += diff2;
+        head = req[i];
+    }
+
+    printf("C-SCAN Seek Time = %d\n", seek);
+}
+
+// 🔹 MAIN
+int main(){
+    int n, head, size, choice;
+    int req[50];
+
+    printf("Enter number of requests: ");
+    scanf("%d",&n);
+
+    printf("Enter requests:\n");
+    for(int i=0;i<n;i++){
+        scanf("%d",&req[i]);
+    }
+
+    printf("Enter initial head position: ");
+    scanf("%d",&head);
+
+    printf("Enter disk size: ");
+    scanf("%d",&size);
+
+    do{
+        printf("\n1.SSTF\n2.LOOK\n3.C-SCAN\n4.Exit\n");
+        printf("Enter choice: ");
+        scanf("%d",&choice);
+
+        switch(choice){
+            case 1: SSTF(req,n,head); break;
+            case 2: LOOK(req,n,head); break;
+            case 3: CSCAN(req,n,head,size); break;
+            case 4: printf("Exit\n"); break;
+            default: printf("Invalid choice\n");
+        }
+
+    }while(choice!=4);
+
+    return 0;
+}
