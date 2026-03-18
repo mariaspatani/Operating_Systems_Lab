@@ -1,6 +1,6 @@
 #include<stdio.h>
 
-// 🔹 Sort function
+// Sort function
 void sort(int arr[], int n){
     for(int i=0;i<n-1;i++){
         for(int j=0;j<n-i-1;j++){
@@ -13,7 +13,7 @@ void sort(int arr[], int n){
     }
 }
 
-// 🔹 SSTF
+//  SSTF
 void SSTF(int req[], int n, int head){
     int visited[50]={0}, seek=0;
 
@@ -38,7 +38,7 @@ void SSTF(int req[], int n, int head){
     printf("SSTF Seek Time = %d\n", seek);
 }
 
-// 🔹 LOOK
+//  LOOK
 void LOOK(int req[], int n, int head){
     int seek=0, pos=0;
     sort(req,n);
@@ -69,7 +69,7 @@ void LOOK(int req[], int n, int head){
     printf("LOOK Seek Time = %d\n", seek);
 }
 
-// 🔹 C-SCAN
+//  C-SCAN
 void CSCAN(int req[], int n, int head, int size){
     int seek=0, pos=0;
     sort(req,n);
@@ -106,7 +106,7 @@ void CSCAN(int req[], int n, int head, int size){
     printf("C-SCAN Seek Time = %d\n", seek);
 }
 
-// 🔹 MAIN
+//  MAIN
 int main(){
     int n, head, size, choice;
     int req[50];
