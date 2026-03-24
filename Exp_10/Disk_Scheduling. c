@@ -1,6 +1,8 @@
 #include<stdio.h>
 
-// Sort function
+#define MAX 50
+
+// Sorting
 void sort(int arr[], int n){
     for(int i=0;i<n-1;i++){
         for(int j=0;j<n-i-1;j++){
@@ -13,9 +15,27 @@ void sort(int arr[], int n){
     }
 }
 
-//  SSTF
+// Graph display
+void graph(int start, int seq[], int n){
+    int cur = start;
+
+    printf("\nDisk Arm Movement Path:\n");
+    printf("Step | Movement\n");
+    printf("--------------------------------------\n");
+
+    for(int i=0;i<n;i++){
+        printf("%2d   | (%3d) -----> [%3d]\n", i+1, cur, seq[i]);
+        cur = seq[i];
+    }
+
+    printf("--------------------------------------\n");
+}
+
+// SSTF
 void SSTF(int req[], int n, int head){
-    int visited[50]={0}, seek=0;
+    int visited[MAX]={0}, seek=0;
+    int seq[MAX], k=0;
+    int start = head;
 
     for(int i=0;i<n;i++){
         int min=9999, index=-1;
@@ -23,7 +43,7 @@ void SSTF(int req[], int n, int head){
         for(int j=0;j<n;j++){
             if(!visited[j]){
                 int diff = head - req[j];
-                if(diff < 0) diff = -diff;   // manual abs
+                if(diff < 0) diff = -diff;
 
                 if(diff < min){
                     min = diff;
@@ -31,16 +51,24 @@ void SSTF(int req[], int n, int head){
                 }
             }
         }
+
         seek += min;
         head = req[index];
+        seq[k++] = head;
         visited[index]=1;
     }
-    printf("SSTF Seek Time = %d\n", seek);
+
+    printf("\n--- SSTF ---\n");
+    printf("Seek Time = %d\n", seek);
+    graph(start, seq, k);
 }
 
-//  LOOK
+// LOOK
 void LOOK(int req[], int n, int head){
     int seek=0, pos=0;
+    int seq[MAX], k=0;
+    int start = head;
+
     sort(req,n);
 
     for(int i=0;i<n;i++){
@@ -50,28 +78,37 @@ void LOOK(int req[], int n, int head){
         }
     }
 
+    // Right side
     for(int i=pos;i<n;i++){
         int diff = head - req[i];
         if(diff < 0) diff = -diff;
 
         seek += diff;
         head = req[i];
+        seq[k++] = head;
     }
 
+    // Left side
     for(int i=pos-1;i>=0;i--){
         int diff = head - req[i];
         if(diff < 0) diff = -diff;
 
         seek += diff;
         head = req[i];
+        seq[k++] = head;
     }
 
-    printf("LOOK Seek Time = %d\n", seek);
+    printf("\n--- LOOK ---\n");
+    printf("Seek Time = %d\n", seek);
+    graph(start, seq, k);
 }
 
-//  C-SCAN
+// C-SCAN
 void CSCAN(int req[], int n, int head, int size){
     int seek=0, pos=0;
+    int seq[MAX], k=0;
+    int start = head;
+
     sort(req,n);
 
     for(int i=0;i<n;i++){
@@ -81,35 +118,47 @@ void CSCAN(int req[], int n, int head, int size){
         }
     }
 
+    // Right side
     for(int i=pos;i<n;i++){
         int diff = head - req[i];
         if(diff < 0) diff = -diff;
 
         seek += diff;
         head = req[i];
+        seq[k++] = head;
     }
 
+    // Move to end (size-1)
     int diff = head - (size - 1);
     if(diff < 0) diff = -diff;
     seek += diff;
+    head = size - 1;
+    seq[k++] = head;
 
+    // Jump to 0
+    seek += (size - 1);
     head = 0;
+    seq[k++] = head;
 
+    // Left side
     for(int i=0;i<pos;i++){
-        int diff2 = head - req[i];
-        if(diff2 < 0) diff2 = -diff2;
+        int d = head - req[i];
+        if(d < 0) d = -d;
 
-        seek += diff2;
+        seek += d;
         head = req[i];
+        seq[k++] = head;
     }
 
-    printf("C-SCAN Seek Time = %d\n", seek);
+    printf("\n--- C-SCAN ---\n");
+    printf("Seek Time = %d\n", seek);
+    graph(start, seq, k);
 }
 
-//  MAIN
+// MAIN
 int main(){
     int n, head, size, choice;
-    int req[50];
+    int req[MAX];
 
     printf("Enter number of requests: ");
     scanf("%d",&n);
