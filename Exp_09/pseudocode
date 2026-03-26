@@ -1,0 +1,138 @@
+================================================================================
+ALGORITHM: PAGE REPLACEMENT SIMULATOR (FIFO, LRU, OPTIMAL)
+================================================================================
+
+ALGORITHM:
+1. Start
+2. Read n (reference string length), frames, pages[1..n]
+3. REPEAT
+   3.1 Display Menu: 1.FIFO 2.LRU 3.OPTIMAL 4.Exit
+   3.2 Read choice
+   3.3 CASE choice:
+        1: CALL FIFO(pages, n, frames)
+        2: CALL LRU(pages, n, frames)  
+        3: CALL OPTIMAL(pages, n, frames)
+        4: Exit
+4. End
+
+================================================================================
+FIFO PAGE REPLACEMENT ALGORITHM
+================================================================================
+ALGORITHM FIFO(pages[], n, frames):
+1. Initialize: f[10] ← -1, faults ← 0, hits ← 0, pos ← 0
+2. Print Header: "Page F1 F2 F3 Status"
+3. FOR i ← 0 TO n-1 DO
+   3.1 found ← FALSE
+   3.2 FOR j ← 0 TO frames-1 DO
+         IF f[j] = pages[i] THEN
+            found ← TRUE
+            BREAK
+         ENDIF
+       ENDFOR
+   3.3 PRINT pages[i]
+   3.4 IF found THEN
+         hits ← hits + 1
+         PRINT f[] "H"
+      ELSE
+         f[pos] ← pages[i]
+         pos ← (pos + 1) MOD frames    // CIRCULAR QUEUE
+         faults ← faults + 1
+         PRINT f[] "M"
+      ENDIF
+   ENDFOR
+4. PRINT "Total Faults =", faults, "Total Hits =", hits
+END FIFO
+
+================================================================================
+LRU PAGE REPLACEMENT ALGORITHM  
+================================================================================
+ALGORITHM LRU(pages[], n, frames):
+1. Initialize: f[10] ← -1, time[10] ← 0, faults ← 0, hits ← 0, count ← 0
+2. Print Header: "Page F1 F2 F3 Status"
+3. FOR i ← 0 TO n-1 DO
+   3.1 found ← FALSE
+   3.2 FOR j ← 0 TO frames-1 DO
+         IF f[j] = pages[i] THEN
+            count ← count + 1
+            time[j] ← count              // UPDATE RECENT TIME
+            found ← TRUE
+            BREAK
+         ENDIF
+       ENDFOR
+   3.3 PRINT pages[i]
+   3.4 IF found THEN
+         hits ← hits + 1
+         PRINT f[] "H"
+      ELSE
+         min ← time[0], pos ← 0
+         FOR j ← 1 TO frames-1 DO
+            IF time[j] < min THEN
+               min ← time[j]
+               pos ← j                 // LEAST RECENT POSITION
+            ENDIF
+         ENDFOR
+         f[pos] ← pages[i]
+         count ← count + 1
+         time[pos] ← count
+         faults ← faults + 1
+         PRINT f[] "M"
+      ENDIF
+   ENDFOR
+4. PRINT "Total Faults =", faults, "Total Hits =", hits
+END LRU
+
+================================================================================
+OPTIMAL PAGE REPLACEMENT ALGORITHM
+================================================================================
+ALGORITHM OPTIMAL(pages[], n, frames):
+1. Initialize: f[10] ← -1, faults ← 0, hits ← 0
+2. Print Header: "Page F1 F2 F3 Status"
+3. FOR i ← 0 TO n-1 DO
+   3.1 found ← FALSE
+   3.2 FOR j ← 0 TO frames-1 DO
+         IF f[j] = pages[i] THEN
+            found ← TRUE
+            BREAK
+         ENDIF
+       ENDFOR
+   3.3 PRINT pages[i]
+   3.4 IF found THEN
+         hits ← hits + 1
+         PRINT f[] "H"
+      ELSE
+         pos ← -1, far ← -1
+         FOR j ← 0 TO frames-1 DO
+            next ← -1
+            FOR k ← i+1 TO n-1 DO      // LOOK INTO FUTURE
+               IF f[j] = pages[k] THEN
+                  next ← k
+                  BREAK
+               ENDIF
+            ENDFOR
+            IF next = -1 THEN          // NEVER USED AGAIN
+               pos ← j
+               BREAK
+            ELSIF next > far THEN      // FARTHEST FUTURE
+               far ← next
+               pos ← j
+            ENDIF
+         ENDFOR
+         f[pos] ← pages[i]
+         faults ← faults + 1
+         PRINT f[] "M"
+      ENDIF
+   ENDFOR
+4. PRINT "Total Faults =", faults, "Total Hits =", hits
+END OPTIMAL
+
+================================================================================
+EXAMPLE TRACE: pages = {1,2,3,2,1,5}, frames = 3
+================================================================================
+FIFO: Faults=6, Hits=0
+LRU:  Faults=5, Hits=1
+OPT:  Faults=4, Hits=2
+
+KEY FORMULA: Faults + Hits = n (Total references)
+================================================================================
+END OF ALGORITHM
+================================================================================
